@@ -189,7 +189,7 @@ Response
 
 `Status: 204 NO CONTENT `
 
-### Scripts
+## Scripts
 
 From within the root directory:
 
