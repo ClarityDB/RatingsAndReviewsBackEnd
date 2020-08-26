@@ -10,7 +10,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage --verbose",
-    "build": "webpack -d --watch"
+    "build:dev": "webpack -d --watch",
+    "build": "webpack -p",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
