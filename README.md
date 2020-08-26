@@ -165,7 +165,7 @@ Parameters
 
 | Parameter | Type    | Description                         |
 | --------- | ------- | ----------------------------------- |
-| reveiw_id | integer | Required ID of the review to update |
+| review_id | integer | Required ID of the review to update |
 
 Response
 
