@@ -8,7 +8,7 @@ const ProductBreakdown = (props) => (
         const oldNumber = type[1].value;
         const number = (oldNumber / 5) * 100;
         return (
-          <div key={index} className="row no-gutters mb-2">
+          <div key={category} className="row no-gutters mb-2">
             <div className="col h6 font-weight-light">
               {category}
             </div>

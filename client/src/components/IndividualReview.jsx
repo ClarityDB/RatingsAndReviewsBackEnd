@@ -31,8 +31,8 @@ const IndividualReview = ({
         {photos.length > 0
           ? (
             <div className="col d-flex justify-content-around">
-              {photos.map((picture, index) => (
-                <img key={index} src={picture.url} alt="Can not be displayed" width="50" height="50" style={{ objectFit: 'cover' }} />
+              {photos.map((picture) => (
+                <img key={id} src={picture.url} alt="Can not be displayed" width="50" height="50" style={{ objectFit: 'cover' }} />
               ))}
             </div>
           )

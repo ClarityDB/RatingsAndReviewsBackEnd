@@ -365,8 +365,8 @@ class AddReview extends React.Component {
             </div>
             <div className="row">
               {this.props.characteristics
-                ? this.props.characteristics.map((type, index) => (
-                  <div key={index} className="col-4 my-3 px-3">
+                ? this.props.characteristics.map((type) => (
+                  <div key={type[0]} className="col-4 my-3 px-3">
                     <div className="bg-light rounded">
                       <div className="row">
                         <div className="col text-center">

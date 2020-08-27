@@ -15,8 +15,8 @@ app.use('/:productId', express.static(path.join(__dirname, "./client/dist")));
 // GET /reviews/:product_id/list
 // Returns a list of reviews for a particular product. This list does not include any reported reviews.
 app.get('/reviews/:product_id/list', (req, res) => {
-  console.log("req.params in list route", req.params);
-  console.log("req.query in list route: ", req.query);
+  // console.log("req.params in list route", req.params);
+  // console.log("req.query in list route: ", req.query);
   res.send({
     "product": "24",
     "page": 0,
@@ -99,8 +99,8 @@ app.get('/reviews/:product_id/list', (req, res) => {
 // GET /reviews/:product_id/meta
 // Returns review metadata for a given product
 app.get("/reviews/:product_id/meta", (req, res) => {
-  console.log("req.params in meta route", req.params);
-  console.log("req.query in meta route: ", req.query);
+  // console.log("req.params in meta route", req.params);
+  // console.log("req.query in meta route: ", req.query);
   res.send({
     "product_id": "24",
     "ratings": {
