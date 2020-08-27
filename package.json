@@ -12,7 +12,8 @@
     "test": "jest --coverage --verbose",
     "build:dev": "webpack -d --watch",
     "build": "webpack -p",
-    "start": "node server.js"
+    "start": "node server.js",
+    "start:dev": "live-server ./client/dist"
   },
   "keywords": [],
   "author": "",
@@ -45,6 +46,7 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
     "bootstrap": "^4.5.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",

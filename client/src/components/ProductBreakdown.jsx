@@ -3,12 +3,12 @@ import React from 'react';
 const ProductBreakdown = (props) => (
   <div className="col no-gutters">
     {props.data
-      ? props.data.map((type) => {
+      ? props.data.map((type, index) => {
         const category = type[0];
         const oldNumber = type[1].value;
         const number = (oldNumber / 5) * 100;
         return (
-          <div className="row no-gutters mb-2">
+          <div key={index} className="row no-gutters mb-2">
             <div className="col h6 font-weight-light">
               {category}
             </div>

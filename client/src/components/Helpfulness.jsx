@@ -15,7 +15,7 @@ class Helpfulness extends React.Component {
     if (this.state.buttonHelpToggle === false) {
       axios({
         method: 'put',
-        url: `http://52.26.193.201:3000/reviews/helpful/${this.props.id}`,
+        url: `http://localhost:3555/reviews/helpful/${this.props.id}`,
       })
         .then((res) => {
           this.setState({
@@ -32,7 +32,7 @@ class Helpfulness extends React.Component {
     if (this.state.buttonReportToggle === false) {
       axios({
         method: 'put',
-        url: `http://52.26.193.201:3000/reviews/report/${this.props.id}`,
+        url: `http://localhost:3555/reviews/report/${this.props.id}`,
       })
         .then((res) => {
           this.setState({
