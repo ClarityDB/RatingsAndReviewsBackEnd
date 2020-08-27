@@ -33,13 +33,14 @@ class ReviewParent extends React.Component {
     }, () => {
       // console.log('data access reset', this.state.apiDataAccessed);
     });
-    axios.get(`http://52.26.193.201:3000/reviews/${productID}/list`, {
+    axios.get(`http://localhost:3555/reviews/${productID}/list`, {
       params: {
         count: 30,
         sort: sortValue,
       },
     })
       .then((results) => {
+        // console.log("reviews/productID/list response: ", results);
         this.setState({
           apiReviews: results.data.results,
           apiDataAccessed: true,
@@ -59,12 +60,13 @@ class ReviewParent extends React.Component {
   pullMetaData(productID = this.state.currentProduct) {
     axios({
       method: 'get',
-      url: `http://52.26.193.201:3000/reviews/${productID}/meta`,
+      url: `http://localhost:3555/reviews/${productID}/meta`,
       data: {
         product_id: productID,
       },
     })
       .then((results) => {
+        // console.log("meta data api results from local host: ", results);
         this.setState({
           apiMeta: results.data,
           apiMetaAccessed: true,

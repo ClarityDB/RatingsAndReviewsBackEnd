@@ -250,7 +250,7 @@ class AddReview extends React.Component {
         // axios.post(`http://52.26.193.201:3000/reviews/${this.props.id}`, dataObj)
         axios({
           method: 'post',
-          url: `http://52.26.193.201:3000/reviews/${this.props.id}`,
+          url: `http://localhost:3555/reviews/${this.props.id}`,
           product_id: this.props.id,
           data: dataObj,
         })
@@ -365,8 +365,8 @@ class AddReview extends React.Component {
             </div>
             <div className="row">
               {this.props.characteristics
-                ? this.props.characteristics.map((type) => (
-                  <div className="col-4 my-3 px-3">
+                ? this.props.characteristics.map((type, index) => (
+                  <div key={index} className="col-4 my-3 px-3">
                     <div className="bg-light rounded">
                       <div className="row">
                         <div className="col text-center">
