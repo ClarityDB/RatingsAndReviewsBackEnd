@@ -2,3 +2,5 @@ node_modules
 .DS_Store
 coverage
 __snapshots__
+postgresReviewSchema.sql
+mongooseReviewSchema.js
