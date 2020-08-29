@@ -5,6 +5,8 @@ const path = require("path");
 const PORT = process.env.PORT || 3555;
 const bodyParser = require("body-parser");
 
+const { getReviews, addReview } = require('./queries');
+
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false}))
 app.use(bodyParser.json());
@@ -17,84 +19,10 @@ app.use('/:productId', express.static(path.join(__dirname, "./client/dist")));
 app.get('/reviews/:product_id/list', (req, res) => {
   // console.log("req.params in list route", req.params);
   // console.log("req.query in list route: ", req.query);
-  res.send({
-    "product": "24",
-    "page": 0,
-    "count": 5,
-    "results": [
-      {
-        "review_id": 57454,
-        "rating": 5,
-        "summary": "TEST",
-        "recommend": 1,
-        "response": null,
-        "body": "ETSTLEKSJTLKJSELKTJLKSEJLKJLKJTL:KSJLKTJLKSEJTLKSJL:KJLK",
-        "date": "2020-08-22T00:00:00.000Z",
-        "reviewer_name": "TEST",
-        "helpfulness": 4,
-        "photos": []
-      },
-      {
-        "review_id": 57459,
-        "rating": 4,
-        "summary": "these overalls are too short!!! maybe I am just too tall. ",
-        "recommend": 1,
-        "response": null,
-        "body": "these overalls are too short!!! maybe I am just too tall. Mario, you can wear these",
-        "date": "2020-08-22T00:00:00.000Z",
-        "reviewer_name": "Luigi",
-        "helpfulness": 2,
-        "photos": [
-          {
-            "id": 27152,
-            "url": "https://toppng.com/uploads/preview/luigi-nsmbod-super-mario-luigi-11563054900re9hy0bndm.png"
-          }
-        ]
-      },
-      {
-        "review_id": 57458,
-        "rating": 5,
-        "summary": "These overalls are the best!!! ",
-        "recommend": 1,
-        "response": null,
-        "body": "they match my red shirt perfectly! let's go save the princess",
-        "date": "2020-08-22T00:00:00.000Z",
-        "reviewer_name": "Its me! Mario",
-        "helpfulness": 1,
-        "photos": [
-          {
-            "id": 27151,
-            "url": "https://pngimg.com/uploads/mario/mario_PNG88.png"
-          }
-        ]
-      },
-      {
-        "review_id": 57455,
-        "rating": 5,
-        "summary": "pretttyyyyyyyyyy good",
-        "recommend": 0,
-        "response": null,
-        "body": "50 characters?????????????????????/???????????????",
-        "date": "2020-08-22T00:00:00.000Z",
-        "reviewer_name": "yes",
-        "helpfulness": 0,
-        "photos": []
-      },
-      {
-        "review_id": 57457,
-        "rating": 1,
-        "summary": "sgsdfgsdfg",
-        "recommend": 1,
-        "response": null,
-        "body": "sdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgadfg",
-        "date": "2020-08-22T00:00:00.000Z",
-        "reviewer_name": "new review ",
-        "helpfulness": 0,
-        "photos": []
-      }
-    ]
-  })
-})
+  getReviews()
+    .then((data) => res.send(data))
+    .catch((err) => res.err(err));
+});
 
 // GET /reviews/:product_id/meta
 // Returns review metadata for a given product
@@ -138,7 +66,21 @@ app.get("/reviews/:product_id/meta", (req, res) => {
 // Adds a review for the given product
 app.post("/reviews/:product_id", (req, res) => {
   // console.log("req.body using bodyparser on review being added: ", req.body);
-  res.sendStatus(201);
+  const dummyReview = {
+      product_id: '1',
+      rating: 4,
+      date: '2020-08-28',
+      summary: 'okay product',
+      body: 'this was actually a so-so product',
+      recommend: true,
+      reported: false,
+      reviewer_name: 'irene',
+      reviewer_email: 'irene@irene.com',
+      response: 'no response',
+      helpfulness: true
+  }
+  addReview(dummyReview);
+  // res.sendStatus(201);
 })
 
 // PUT /reviews/helpful/:review_id
