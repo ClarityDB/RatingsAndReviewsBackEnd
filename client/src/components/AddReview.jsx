@@ -207,22 +207,22 @@ class AddReview extends React.Component {
   createCharacteristicObject() {
     const characteristicsObject = {};
     if (typeof this.state.formSizeRating === 'number') {
-      characteristicsObject[this.state.formSizeID] = this.state.formSizeRating;
+      characteristicsObject['size'] = this.state.formSizeRating;
     }
     if (typeof this.state.formWidthRating === 'number') {
-      characteristicsObject[this.state.formWidthID] = this.state.formWidthRating;
+      characteristicsObject['width'] = this.state.formWidthRating;
     }
     if (typeof this.state.formComfortRating === 'number') {
-      characteristicsObject[this.state.formComfortID] = this.state.formComfortRating;
+      characteristicsObject['comfort'] = this.state.formComfortRating;
     }
     if (typeof this.state.formQualityRating === 'number') {
-      characteristicsObject[this.state.formQualityID] = this.state.formQualityRating;
+      characteristicsObject['quality'] = this.state.formQualityRating;
     }
     if (typeof this.state.formLengthRating === 'number') {
-      characteristicsObject[this.state.formLengthID] = this.state.formLengthRating;
+      characteristicsObject['length'] = this.state.formLengthRating;
     }
     if (typeof this.state.formFitRating === 'number') {
-      characteristicsObject[this.state.formFitID] = this.state.formFitRating;
+      characteristicsObject['fit'] = this.state.formFitRating;
     }
     this.setState({
       charObj: characteristicsObject,
