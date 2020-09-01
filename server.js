@@ -160,9 +160,8 @@ app.post("/reviews/:product_id", (req, res) => {
   addReview(reviewToAdd)
     .then((review_id) => {
       addCharacteristics(characteristicsToAdd, review_id)
-      // pick up work here, need to figure out how to add either photos or an empty array
-      if (photos.length) {
-        addPhotos(photosToAdd, review_id)
+      for (var i = 0; i < photos.length; i++) {
+        addPhotos(photo[i], review_id)
       };
     })
     .catch((err) => res.send(err));
