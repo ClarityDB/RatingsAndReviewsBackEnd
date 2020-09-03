@@ -40,7 +40,7 @@ class ReviewParent extends React.Component {
       },
     })
       .then((results) => {
-        // console.log("reviews/productID/list response: ", results);
+        console.log("reviews/productID/list response: ", results);
         this.setState({
           apiReviews: results.data.results,
           apiDataAccessed: true,
