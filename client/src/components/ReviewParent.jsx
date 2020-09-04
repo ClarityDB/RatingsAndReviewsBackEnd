@@ -42,7 +42,7 @@ class ReviewParent extends React.Component {
       .then((results) => {
         console.log("reviews/productID/list response: ", results);
         this.setState({
-          apiReviews: results.data.results,
+          apiReviews: results.data,
           apiDataAccessed: true,
           stateSortValue: sortValue,
         }, () => {

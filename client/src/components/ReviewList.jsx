@@ -75,6 +75,7 @@ class ReviewList extends React.Component {
   }
 
   render() {
+    console.log("current List in reviewList: ", this.state.currentList);
     return (
       <div className="container" style={{ height: 600 }}>
         <div className="row">
@@ -111,10 +112,10 @@ class ReviewList extends React.Component {
                 title={review.summary}
                 body={review.body}
                 help={review.helpfulness}
-                id={review.review_id}
+                id={review.id}
                 response={review.response}
                 photos={review.photos}
-                key={review.review_id}
+                key={review.id}
               />
             ))}
           </div>

@@ -5,7 +5,9 @@ const path = require("path");
 const PORT = process.env.PORT || 3555;
 const bodyParser = require("body-parser");
 
-const { getReviews, addReview, addCharacteristics, addPhotos } = require('./queries');
+const { getReviews, addReview, addCharacteristics, addPhotos, getPhotos } = require('./queries');
+const { promises } = require("fs");
+const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require("constants");
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -20,77 +22,116 @@ app.get('/reviews/:product_id/list', (req, res) => {
   // console.log("req.params in list route", req.params);
   // console.log("req.query in list route: ", req.query);
 
-  // getReviews(req.params.product_id.toString(), req.query.count, req.query.sort)
-  //   .then((data) => res.send(data))
-  //   .catch((err) => res.send(err))
+  let startGetReviewsQuery = new Date;
+  getReviews(req.params.product_id.toString(), req.query.count, req.query.sort)
+    .then((data) => {
+      // console.log("starting reviews data flow");
+      // let startGetPhotosQuery = new Date;
+      let photos = [];
+      for (var i = 0; i < data.results.length; i++) {
+        let currentReview = data.results[i];
+        // promise.all this
+        // push each getPhotos call into an array
+        // promise.all the array
+        // tie results of each call to the appropriate review using review id
+        photos.push(getPhotos(currentReview.id));
 
-  res.send({
-      "product": "1",
-      "page": 0,
-      "count": 5,
-    "results": [
-      {
-        "review_id": 57431,
-        "rating": 1,
-        "summary": "First Review",
-        "recommend": 0,
-        "response": null,
-        "body": "First ReviewFirst ReviewFirst ReviewFirst ReviewFirst ReviewFirst ReviewFirst Review",
-        "date": "2020-08-18T00:00:00.000Z",
-        "reviewer_name": "First Review",
-        "helpfulness": 6,
-        "photos": []
-      },
-      {
-        "review_id": 57377,
-        "rating": 5,
-        "summary": "First Review",
-        "recommend": 1,
-        "response": null,
-        "body": "Best Ever",
-        "date": "2020-08-12T00:00:00.000Z",
-        "reviewer_name": "Iwrote this",
-        "helpfulness": 5,
-        "photos": []
-      },
-      {
-        "review_id": 57379,
-        "rating": 5,
-        "summary": "fdafda",
-        "recommend": 1,
-        "response": null,
-        "body": "VADVA",
-        "date": "2020-08-12T00:00:00.000Z",
-        "reviewer_name": "Me IDid",
-        "helpfulness": 2,
-        "photos": []
-      },
-      {
-        "review_id": 57419,
-        "rating": 4,
-        "summary": "testing ",
-        "recommend": 1,
-        "response": null,
-        "body": "hello world over and over hello world over and over hello world over and over hello world over and over hello world over and over",
-        "date": "2020-08-16T00:00:00.000Z",
-        "reviewer_name": "tester",
-        "helpfulness": 1,
-        "photos": []
-      },
-      {
-        "review_id": 57402,
-        "rating": 5,
-        "summary": "testing update ratings on submit",
-        "recommend": 1,
-        "response": null,
-        "body": " update ratings on submit update ratings on submit update ratings on submit update ratings on submit update ratings on submit update ratings on submit update ratings on submit",
-        "date": "2020-08-16T00:00:00.000Z",
-        "reviewer_name": "this is me",
-        "helpfulness": 0,
-        "photos": []
+        // .then((response) => {
+        //     currentReview.photos = response;
+        //     let endGetPhotosQuery = new Date;
+        //     console.log(`Photos took ${(endGetPhotosQuery - startGetPhotosQuery) / 1000} s to retrieve`);
+        //     // console.log("data results to send back to client at the end of the get reviews function: ", data.results)
+        // })
+        //   .catch((err) => console.log("get photos error: ", err));
       }
-    ]
-  })
+      Promise.all(photos)
+          .then((response) => {
+            for (var i = 0; i < data.results.length; i++) {
+              let currentReview = data.results[i];
+              currentReview.photos = [];
+              for (var j = 0; j < response.length; j++) {
+                if (response[j][0]) {
+                  if (response[j][0].review_id === currentReview.id.toString()) {
+                    currentReview.photos = response[j];
+                  }
+                }
+              }
+            }
+            res.send(data.results);
+          })
+          .catch((err) => console.log("promise all error: ", err));
+      // let endGetReviewsQuery = new Date;
+      // console.log(`total time for getReviewsQuery was ${(endGetReviewsQuery - startGetReviewsQuery) / 1000} s`);
+    })
+    .catch((err) => res.send(err))
+
+  // res.send({
+  //     "product": "1",
+  //     "page": 0,
+  //     "count": 5,
+  //   "results": [
+  //     {
+  //       "review_id": 57431,
+  //       "rating": 1,
+  //       "summary": "First Review",
+  //       "recommend": 0,
+  //       "response": null,
+  //       "body": "First ReviewFirst ReviewFirst ReviewFirst ReviewFirst ReviewFirst ReviewFirst Review",
+  //       "date": "2020-08-18T00:00:00.000Z",
+  //       "reviewer_name": "First Review",
+  //       "helpfulness": 6,
+  //       "photos": []
+  //     },
+  //     {
+  //       "review_id": 57377,
+  //       "rating": 5,
+  //       "summary": "First Review",
+  //       "recommend": 1,
+  //       "response": null,
+  //       "body": "Best Ever",
+  //       "date": "2020-08-12T00:00:00.000Z",
+  //       "reviewer_name": "Iwrote this",
+  //       "helpfulness": 5,
+  //       "photos": []
+  //     },
+  //     {
+  //       "review_id": 57379,
+  //       "rating": 5,
+  //       "summary": "fdafda",
+  //       "recommend": 1,
+  //       "response": null,
+  //       "body": "VADVA",
+  //       "date": "2020-08-12T00:00:00.000Z",
+  //       "reviewer_name": "Me IDid",
+  //       "helpfulness": 2,
+  //       "photos": []
+  //     },
+  //     {
+  //       "review_id": 57419,
+  //       "rating": 4,
+  //       "summary": "testing ",
+  //       "recommend": 1,
+  //       "response": null,
+  //       "body": "hello world over and over hello world over and over hello world over and over hello world over and over hello world over and over",
+  //       "date": "2020-08-16T00:00:00.000Z",
+  //       "reviewer_name": "tester",
+  //       "helpfulness": 1,
+  //       "photos": []
+  //     },
+  //     {
+  //       "review_id": 57402,
+  //       "rating": 5,
+  //       "summary": "testing update ratings on submit",
+  //       "recommend": 1,
+  //       "response": null,
+  //       "body": " update ratings on submit update ratings on submit update ratings on submit update ratings on submit update ratings on submit update ratings on submit update ratings on submit",
+  //       "date": "2020-08-16T00:00:00.000Z",
+  //       "reviewer_name": "this is me",
+  //       "helpfulness": 0,
+  //       "photos": []
+  //     }
+  //   ]
+  // })
 });
 
 // GET /reviews/:product_id/meta
