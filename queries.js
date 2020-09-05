@@ -120,31 +120,41 @@ const addCharacteristics = (characteristicsObject, review_id) => {
     characteristics.push([review_id, key, characteristicsObject.characteristics[key]]);
   }
 
+
   // doing these in order (not in a loop) because the async aspect of queries causes problems inside a loop (unique id collisions), hence perform next insertion only after previous has completed
-  pool
-    .query(`SELECT setval('characteristics_reviews_id_seq', (SELECT MAX(id) FROM characteristics_reviews)); INSERT INTO characteristics_reviews(id, review_id, characteristics_name, value) VALUES(DEFAULT, '${characteristics[0][0]}', '${characteristics[0][1]}', '${characteristics[0][2]}')`)
-    .then((res) => {
-
-      pool
-        .query(`INSERT INTO characteristics_reviews(id, review_id, characteristics_name, value) VALUES(DEFAULT, '${characteristics[1][0]}', '${characteristics[1][1]}', '${characteristics[1][2]}')`)
-        .then((res) => {
-
+  if (characteristics[0]) {
+    pool
+      .query(`SELECT setval('characteristics_reviews_id_seq', (SELECT MAX(id) FROM characteristics_reviews)); INSERT INTO characteristics_reviews(id, review_id, characteristics_name, value) VALUES(DEFAULT, '${characteristics[0][0]}', '${characteristics[0][1]}', '${characteristics[0][2]}')`)
+      .then(() => {
+        if (characteristics[1]) {
           pool
-            .query(`INSERT INTO characteristics_reviews(id, review_id, characteristics_name, value) VALUES(DEFAULT, '${characteristics[2][0]}', '${characteristics[2][1]}', '${characteristics[2][2]}')`)
-            .then((res) => {
-
-              pool
-                .query(`INSERT INTO characteristics_reviews(id, review_id, characteristics_name, value) VALUES(DEFAULT, '${characteristics[3][0]}', '${characteristics[3][1]}', '${characteristics[3][2]}')`)
-                .then((res) => {
-
-                })
-                .catch((err) => console.log(err));
+            .query(`INSERT INTO characteristics_reviews(id, review_id, characteristics_name, value) VALUES(DEFAULT, '${characteristics[1][0]}', '${characteristics[1][1]}', '${characteristics[1][2]}')`)
+            .then(() => {
+              if (characteristics[2]) {
+                pool
+                  .query(`INSERT INTO characteristics_reviews(id, review_id, characteristics_name, value) VALUES(DEFAULT, '${characteristics[2][0]}', '${characteristics[2][1]}', '${characteristics[2][2]}')`)
+                  .then(() => {
+                    if (characteristics[3]) {
+                      pool
+                        .query(`INSERT INTO characteristics_reviews(id, review_id, characteristics_name, value) VALUES(DEFAULT, '${characteristics[3][0] || null}', '${characteristics[3][1]}', '${characteristics[3][2]}')`)
+                        .then(() => {
+                          if (characteristics[4]) {
+                            pool
+                              .query(`INSERT INTO characteristics_reviews(id, review_id, characteristics_name, value) VALUES(DEFAULT, '${characteristics[4][0] || null}', '${characteristics[4][1]}', '${characteristics[4][2]}')`)
+                              .catch((err) => console.log(err));
+                          }
+                        })
+                        .catch((err) => console.log(err));
+                    }
+                  })
+                  .catch((err) => console.log(err));
+              }
             })
             .catch((err) => console.log(err));
-        })
-        .catch((err) => console.log(err));
-    })
-    .catch((err) => console.log(err));
+        }
+      })
+      .catch((err) => console.log(err));
+  }
 
 
   for (var i = 0; i < characteristics.length; i++) {

@@ -31,13 +31,13 @@ let photos = '';
 while (numberOfReviews < numberToWrite) {
   // generate 4 random characteristics for each product
   let characteristicsToChoose = characteristicsPossiblities.slice();
-  fourRandomCharacteristics = [];
-  characteristicsCountdown = 3;
+  randomCharacteristics = [];
+  characteristicsCountdown = random(0,5);
 
-  while (characteristicsCountdown >= 0) {
+  while (characteristicsCountdown > 0) {
     let randomIndex = random(0, characteristicsToChoose.length);
     let randomCharacteristic = characteristicsToChoose[randomIndex];
-    fourRandomCharacteristics.push(randomCharacteristic);
+    randomCharacteristics.push(randomCharacteristic);
     characteristicsToChoose.splice(randomIndex, 1);
     characteristicsCountdown--;
   }
@@ -45,7 +45,7 @@ while (numberOfReviews < numberToWrite) {
   // populate products array with current product + characteristics
   products[product_id] = {
     product_id: product_id + 1,
-    characteristics: fourRandomCharacteristics
+    characteristics: randomCharacteristics
   };
 
   let randomReviewAmount = random(0, 10);

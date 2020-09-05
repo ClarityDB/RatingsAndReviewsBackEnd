@@ -8,17 +8,17 @@ class AddReview extends React.Component {
     this.state = {
       formStarRating: null,
       formRecommended: null,
-      formSizeRating: null,
+      formsizeRating: null,
       formSizeID: null,
-      formWidthRating: null,
+      formwidthRating: null,
       formWidthID: null,
-      formComfortRating: null,
+      formcomfortRating: null,
       formComfortID: null,
-      formQualityRating: null,
+      formqualityRating: null,
       formQualityID: null,
-      formLengthRating: null,
+      formlengthRating: null,
       formLengthID: null,
-      formFitRating: null,
+      formfitRating: null,
       formFitID: null,
       formNameInput: '',
       formEmailInput: '',
@@ -91,7 +91,7 @@ class AddReview extends React.Component {
 
   onFormSizeChange(event) {
     this.setState({
-      formSizeRating: Number(event.target.value),
+      formsizeRating: Number(event.target.value),
     }, () => {
       // console.log('Current Value from Form Size Rating: ', this.state.formSizeRating);
     });
@@ -99,41 +99,41 @@ class AddReview extends React.Component {
 
   onFormWidthChange(event) {
     this.setState({
-      formWidthRating: Number(event.target.value),
+      formwidthRating: Number(event.target.value),
     }, () => {
-      // console.log('Current Value from Form Width Rating: ', this.state.formWidthRating);
+      // console.log('Current Value from Form Width Rating: ', this.state.formwidthRating);
     });
   }
 
   onFormComfortChange(event) {
     this.setState({
-      formComfortRating: Number(event.target.value),
+      formcomfortRating: Number(event.target.value),
     }, () => {
-      // console.log('Current Value from Form Comfort Rating: ', this.state.formComfortRating);
+      // console.log('Current Value from Form Comfort Rating: ', this.state.formcomfortRating);
     });
   }
 
   onFormQualityChange(event) {
     this.setState({
-      formQualityRating: Number(event.target.value),
+      formqualityRating: Number(event.target.value),
     }, () => {
-      // console.log('Current Value from Form Quality Rating: ', this.state.formQualityRating);
+      // console.log('Current Value from Form Quality Rating: ', this.state.formqualityRating);
     });
   }
 
   onFormLengthChange(event) {
     this.setState({
-      formLengthRating: Number(event.target.value),
+      formlengthRating: Number(event.target.value),
     }, () => {
-      // console.log('Current Value from Form Length Rating: ', this.state.formLengthRating);
+      // console.log('Current Value from Form Length Rating: ', this.state.formlengthRating);
     });
   }
 
   onFormFitChange(event) {
     this.setState({
-      formFitRating: Number(event.target.value),
+      formfitRating: Number(event.target.value),
     }, () => {
-      // console.log('Current Value from Form Fit Rating: ', this.state.formFitRating);
+      // console.log('Current Value from Form Fit Rating: ', this.state.formfitRating);
     });
   }
   /// ////////////////////////////////////////////////////////////////////
@@ -165,7 +165,7 @@ class AddReview extends React.Component {
                 const currentCharIDKey = `form${type[0]}ID`;
                 // GET ID AND SETSTATE HERE
                 this.setState({
-                  [currentCharIDKey]: type[1].id,
+                  [currentCharIDKey]: type[1].value,
                 }, () => {
                   // console.log('after dynamic state set', [currentCharIDKey]);
                 });
@@ -206,23 +206,23 @@ class AddReview extends React.Component {
 
   createCharacteristicObject() {
     const characteristicsObject = {};
-    if (typeof this.state.formSizeRating === 'number') {
-      characteristicsObject['size'] = this.state.formSizeRating;
+    if (typeof this.state.formsizeRating === 'number') {
+      characteristicsObject['size'] = this.state.formsizeRating;
     }
-    if (typeof this.state.formWidthRating === 'number') {
-      characteristicsObject['width'] = this.state.formWidthRating;
+    if (typeof this.state.formwidthRating === 'number') {
+      characteristicsObject['width'] = this.state.formwidthRating;
     }
-    if (typeof this.state.formComfortRating === 'number') {
-      characteristicsObject['comfort'] = this.state.formComfortRating;
+    if (typeof this.state.formcomfortRating === 'number') {
+      characteristicsObject['comfort'] = this.state.formcomfortRating;
     }
-    if (typeof this.state.formQualityRating === 'number') {
-      characteristicsObject['quality'] = this.state.formQualityRating;
+    if (typeof this.state.formqualityRating === 'number') {
+      characteristicsObject['quality'] = this.state.formqualityRating;
     }
-    if (typeof this.state.formLengthRating === 'number') {
-      characteristicsObject['length'] = this.state.formLengthRating;
+    if (typeof this.state.formlengthRating === 'number') {
+      characteristicsObject['length'] = this.state.formlengthRating;
     }
-    if (typeof this.state.formFitRating === 'number') {
-      characteristicsObject['fit'] = this.state.formFitRating;
+    if (typeof this.state.formfitRating === 'number') {
+      characteristicsObject['fit'] = this.state.formfitRating;
     }
     this.setState({
       charObj: characteristicsObject,
@@ -278,12 +278,12 @@ class AddReview extends React.Component {
   /// ////////////////////////////////////////////////////////////////////
   render() {
     const charChange = {
-      Size: this.onFormSizeChange.bind(this),
-      Width: this.onFormWidthChange.bind(this),
-      Comfort: this.onFormComfortChange.bind(this),
-      Quality: this.onFormQualityChange.bind(this),
-      Length: this.onFormLengthChange.bind(this),
-      Fit: this.onFormFitChange.bind(this),
+      size: this.onFormSizeChange.bind(this),
+      width: this.onFormWidthChange.bind(this),
+      comfort: this.onFormComfortChange.bind(this),
+      quality: this.onFormQualityChange.bind(this),
+      length: this.onFormLengthChange.bind(this),
+      fit: this.onFormFitChange.bind(this),
     };
 
     return (
@@ -399,7 +399,7 @@ class AddReview extends React.Component {
                           </div>
                         </div>
                       </div>
-                      {type[0] === 'Size'
+                      {type[0] === 'size'
                         ? (
                           <div className="row">
                             <small className="col font-weight-light text-muted">Too small</small>
@@ -407,7 +407,7 @@ class AddReview extends React.Component {
                             <small className="col font-weight-light text-muted text-right">Too big</small>
                           </div>
                         )
-                        : type[0] === 'Width'
+                        : type[0] === 'width'
                           ? (
                             <div className="row">
                               <small className="col font-weight-light text-muted">Too narrow</small>
@@ -415,21 +415,21 @@ class AddReview extends React.Component {
                               <small className="col font-weight-light text-muted text-right">Too wide</small>
                             </div>
                           )
-                          : type[0] === 'Comfort'
+                          : type[0] === 'comfort'
                             ? (
                               <div className="row">
                                 <small className="col font-weight-light text-muted">Uncomfortable</small>
                                 <small className="col font-weight-light text-muted text-right">Perfect</small>
                               </div>
                             )
-                            : type[0] === 'Quality'
+                            : type[0] === 'quality'
                               ? (
                                 <div className="row">
                                   <small className="col font-weight-light text-muted">Poor</small>
                                   <small className="col font-weight-light text-muted text-right">Perfect</small>
                                 </div>
                               )
-                              : type[0] === 'Length'
+                              : type[0] === 'length'
                                 ? (
                                   <div className="row">
                                     <small className="col font-weight-light text-muted">Too short</small>
@@ -437,7 +437,7 @@ class AddReview extends React.Component {
                                     <small className="col font-weight-light text-muted text-right">Too long</small>
                                   </div>
                                 )
-                                : type[0] === 'Fit'
+                                : type[0] === 'fit'
                                   ? (
                                     <div className="row">
                                       <small className="col font-weight-light text-muted">Too tight</small>

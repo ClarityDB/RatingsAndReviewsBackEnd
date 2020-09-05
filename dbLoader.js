@@ -1,9 +1,6 @@
 const pg = require('pg');
 const { Pool } = require('pg');
-const types = pg.types;
-types.setTypeParser(1114, function(stringValue) {
-  return stringValue;
-});
+
 const connectionString = 'postgresql://localhost:5432/reviewsdb?user=ethan&password=ethan';
 const path = require('path');
 
@@ -125,3 +122,7 @@ const loadPhotos = () => {
 loadReviews();
 loadCharacteristics();
 loadPhotos();
+
+// add queries for indexing here at the bottom
+  // once everything has loaded
+    // create indices for the appropriate columns so that I don't have to do it manually

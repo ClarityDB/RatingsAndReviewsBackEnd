@@ -41,6 +41,9 @@ app.get('/reviews/:product_id/list', (req, res) => {
           const withoutReported = []
           for (var i = 0; i < data.results.length; i++) {
             let currentReview = data.results[i];
+            if (currentReview.response === 'none') {
+              currentReview.response = ''
+            }
             if (!currentReview.reported === true) {
               withoutReported.push(currentReview)
             }
@@ -88,9 +91,6 @@ app.post("/reviews/:product_id", (req, res) => {
 
   const photosToAdd = [];
 
-  console.log("review to add: ", reviewToAdd);
-  console.log("characteristics to add: ", characteristicsToAdd);
-
   addReview(reviewToAdd)
     .then((review_id) => {
       addCharacteristics(characteristicsToAdd, review_id)
@@ -112,7 +112,6 @@ app.put("/reviews/helpful/:review_id", (req, res) => {
 
 // Updates a review to show it was reported. Note, this action does not delete the review, but the review will not be returned in the above GET request.
 app.put("/reviews/report/:review_id", (req, res) => {
-  console.log("reported review:", req.params);
   report(req.params)
     .then((response) => {
       res.send(response)
