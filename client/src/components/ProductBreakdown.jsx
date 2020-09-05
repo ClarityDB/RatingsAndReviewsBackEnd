@@ -3,7 +3,7 @@ import React from 'react';
 const ProductBreakdown = (props) => (
   <div className="col no-gutters">
     {props.data
-      ? props.data.map((type, index) => {
+      ? props.data.map((type) => {
         const category = type[0];
         const oldNumber = type[1].value;
         const number = (oldNumber / 5) * 100;
@@ -18,7 +18,7 @@ const ProductBreakdown = (props) => (
               <div className="progress-bar bg-light" role="progressbar" style={{ width: `${100 - (number - 2.5)}%` }} aria-valuenow={`${100 - (number - 2.5)}`} aria-valuemin="1" aria-valuemax="100" />
             </div>
             <div className="col">
-              {category === 'Size'
+              {category === 'size'
                 ? (
                   <div className="row">
                     <small className="col font-weight-light text-muted">Too small</small>
@@ -26,7 +26,7 @@ const ProductBreakdown = (props) => (
                     <small className="col font-weight-light text-muted text-right">Too big</small>
                   </div>
                 )
-                : category === 'Width'
+                : category === 'width'
                   ? (
                     <div className="row">
                       <small className="col font-weight-light text-muted">Too narrow</small>
@@ -34,21 +34,21 @@ const ProductBreakdown = (props) => (
                       <small className="col font-weight-light text-muted text-right">Too wide</small>
                     </div>
                   )
-                  : category === 'Comfort'
+                  : category === 'comfort'
                     ? (
                       <div className="row">
                         <small className="col font-weight-light text-muted">Uncomfortable</small>
                         <small className="col font-weight-light text-muted text-right">Perfect</small>
                       </div>
                     )
-                    : category === 'Quality'
+                    : category === 'quality'
                       ? (
                         <div className="row">
                           <small className="col font-weight-light text-muted">Poor</small>
                           <small className="col font-weight-light text-muted text-right">Perfect</small>
                         </div>
                       )
-                      : category === 'Length'
+                      : category === 'length'
                         ? (
                           <div className="row">
                             <small className="col font-weight-light text-muted">Too short</small>
@@ -56,7 +56,7 @@ const ProductBreakdown = (props) => (
                             <small className="col font-weight-light text-muted text-right">Too long</small>
                           </div>
                         )
-                        : category === 'Fit'
+                        : category === 'fit'
                           ? (
                             <div className="row">
                               <small className="col font-weight-light text-muted">Too tight</small>

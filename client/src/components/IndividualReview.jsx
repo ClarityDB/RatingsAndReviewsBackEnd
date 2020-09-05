@@ -10,7 +10,7 @@ const IndividualReview = ({
   moment.suppressDeprecationWarnings = true;
   const timestamp = moment(date).format('MMMM D, YYYY');
   return (
-    <div className="border-bottom border-dark m-2 no-gutters h-auto w-auto">
+    <div className="border-bottom border-dark m-2 no-gutters h-auto w-auto" key={id}>
       <div className="row justify-content-between no-gutters">
         <div className="col no-gutters">
           <div className="Stars" style={{ '--rating': `${rating}` }} />
@@ -32,7 +32,7 @@ const IndividualReview = ({
           ? (
             <div className="col d-flex justify-content-around">
               {photos.map((picture) => (
-                <img key={id} src={picture.url} alt="Can not be displayed" width="50" height="50" style={{ objectFit: 'cover' }} />
+                <img key={picture.id} src={picture.url} alt="Can not be displayed" width="50" height="50" style={{ objectFit: 'cover' }} />
               ))}
             </div>
           )

@@ -5,7 +5,7 @@ const path = require("path");
 const PORT = process.env.PORT || 3555;
 const bodyParser = require("body-parser");
 
-const { getReviews, addReview, addCharacteristics, addPhotos } = require('./queries');
+const { getReviews, addReview, addCharacteristics, addPhotos, getPhotos, getCharacteristics, markHelpful, report } = require('./queries');
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -14,124 +14,61 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "./client/dist")));
 app.use('/:productId', express.static(path.join(__dirname, "./client/dist")));
 
-// GET /reviews/:product_id/list
 // Returns a list of reviews for a particular product. This list does not include any reported reviews.
 app.get('/reviews/:product_id/list', (req, res) => {
-  // console.log("req.params in list route", req.params);
-  // console.log("req.query in list route: ", req.query);
-
-  // getReviews(req.params.product_id.toString(), req.query.count, req.query.sort)
-  //   .then((data) => res.send(data))
-  //   .catch((err) => res.send(err))
-
-  res.send({
-      "product": "1",
-      "page": 0,
-      "count": 5,
-    "results": [
-      {
-        "review_id": 57431,
-        "rating": 1,
-        "summary": "First Review",
-        "recommend": 0,
-        "response": null,
-        "body": "First ReviewFirst ReviewFirst ReviewFirst ReviewFirst ReviewFirst ReviewFirst Review",
-        "date": "2020-08-18T00:00:00.000Z",
-        "reviewer_name": "First Review",
-        "helpfulness": 6,
-        "photos": []
-      },
-      {
-        "review_id": 57377,
-        "rating": 5,
-        "summary": "First Review",
-        "recommend": 1,
-        "response": null,
-        "body": "Best Ever",
-        "date": "2020-08-12T00:00:00.000Z",
-        "reviewer_name": "Iwrote this",
-        "helpfulness": 5,
-        "photos": []
-      },
-      {
-        "review_id": 57379,
-        "rating": 5,
-        "summary": "fdafda",
-        "recommend": 1,
-        "response": null,
-        "body": "VADVA",
-        "date": "2020-08-12T00:00:00.000Z",
-        "reviewer_name": "Me IDid",
-        "helpfulness": 2,
-        "photos": []
-      },
-      {
-        "review_id": 57419,
-        "rating": 4,
-        "summary": "testing ",
-        "recommend": 1,
-        "response": null,
-        "body": "hello world over and over hello world over and over hello world over and over hello world over and over hello world over and over",
-        "date": "2020-08-16T00:00:00.000Z",
-        "reviewer_name": "tester",
-        "helpfulness": 1,
-        "photos": []
-      },
-      {
-        "review_id": 57402,
-        "rating": 5,
-        "summary": "testing update ratings on submit",
-        "recommend": 1,
-        "response": null,
-        "body": " update ratings on submit update ratings on submit update ratings on submit update ratings on submit update ratings on submit update ratings on submit update ratings on submit",
-        "date": "2020-08-16T00:00:00.000Z",
-        "reviewer_name": "this is me",
-        "helpfulness": 0,
-        "photos": []
+  getReviews(req.params.product_id.toString(), req.query.count, req.query.sort)
+    .then((data) => {
+      let photos = [];
+      for (var i = 0; i < data.results.length; i++) {
+        let currentReview = data.results[i];
+        photos.push(getPhotos(currentReview.id));
       }
-    ]
-  })
+      Promise.all(photos)
+        .then((response) => {
+          for (var i = 0; i < data.results.length; i++) {
+            let currentReview = data.results[i];
+            currentReview.photos = [];
+            for (var j = 0; j < response.length; j++) {
+              if (response[j][0]) {
+                if (response[j][0].review_id === currentReview.id.toString()) {
+                  currentReview.photos = response[j];
+                }
+              }
+            }
+          }
+
+          // remove any reviews that have been reported
+          const withoutReported = []
+          for (var i = 0; i < data.results.length; i++) {
+            let currentReview = data.results[i];
+            if (currentReview.response === 'none') {
+              currentReview.response = ''
+            }
+            if (!currentReview.reported === true) {
+              withoutReported.push(currentReview)
+            }
+          }
+
+          // sort remaining reviews by newest as default response
+          withoutReported.sort((a, b) => { return b.date - a.date });
+          // sort by helpfulness otherwise
+          if (req.query.sort === 'helpful' || req.query.sort === 'relevant') {
+            withoutReported.sort((a, b) => { return b.helpfulness - a.helpfulness })
+          }
+          res.send(withoutReported);
+        })
+        .catch((err) => console.log("promise all error: ", err));
+    })
+    .catch((err) => res.send(err))
 });
 
-// GET /reviews/:product_id/meta
 // Returns review metadata for a given product
 app.get("/reviews/:product_id/meta", (req, res) => {
-  // console.log("req.params in meta route", req.params);
-  // console.log("req.query in meta route: ", req.query);
-  res.send({
-    "product_id": "24",
-    "ratings": {
-      "1": 2,
-      "2": 2,
-      "4": 4,
-      "5": 14
-    },
-    "recommended": {
-      "0": 3,
-      "1": 19
-    },
-    "characteristics": {
-      "Fit": {
-        "id": 78,
-        "value": "3.7368"
-      },
-      "Length": {
-        "id": 79,
-        "value": "3.7895"
-      },
-      "Comfort": {
-        "id": 80,
-        "value": "4.0000"
-      },
-      "Quality": {
-        "id": 81,
-        "value": "3.8421"
-      }
-    }
-  })
+  getCharacteristics(req.params.product_id.toString())
+    .then((response) => res.send(response))
+    .catch((err) => console.log("error getting characteristics: ", err));
 })
 
-// POST /reviews/:product_id
 // Adds a review for the given product
 app.post("/reviews/:product_id", (req, res) => {
   const reviewToAdd = {
@@ -154,9 +91,6 @@ app.post("/reviews/:product_id", (req, res) => {
 
   const photosToAdd = [];
 
-  console.log("review to add: ", reviewToAdd);
-  console.log("characteristics to add: ", characteristicsToAdd);
-
   addReview(reviewToAdd)
     .then((review_id) => {
       addCharacteristics(characteristicsToAdd, review_id)
@@ -167,18 +101,22 @@ app.post("/reviews/:product_id", (req, res) => {
     .catch((err) => res.send(err));
 })
 
-// PUT /reviews/helpful/:review_id
 // Updates a review to show it was found helpful
 app.put("/reviews/helpful/:review_id", (req, res) => {
-  console.log("helpful review: ", req.params);
-  res.sendStatus(204);
+  markHelpful(req.params)
+    .then((response) => {
+      res.send(response);
+    })
+    .catch((err) => err)
 })
 
-// PUT /reviews/report/:review_id
 // Updates a review to show it was reported. Note, this action does not delete the review, but the review will not be returned in the above GET request.
 app.put("/reviews/report/:review_id", (req, res) => {
-  console.log("reported review:", req.params);
-  res.sendStatus(204);
+  report(req.params)
+    .then((response) => {
+      res.send(response)
+    })
+    .catch((err) => err);
 })
 
 app.listen(PORT, () => {

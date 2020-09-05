@@ -1,7 +1,7 @@
 import React from 'react';
 import 'bootstrap';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
 import ReviewList from './ReviewList';
 import RatingSummary from './RatingSummary';
 
@@ -40,9 +40,9 @@ class ReviewParent extends React.Component {
       },
     })
       .then((results) => {
-        console.log("reviews/productID/list response: ", results);
+        // console.log("reviews/productID/list response: ", results);
         this.setState({
-          apiReviews: results.data.results,
+          apiReviews: results.data,
           apiDataAccessed: true,
           stateSortValue: sortValue,
         }, () => {
