@@ -32,6 +32,117 @@ const getPhotos = (review_id) => {
     .catch((err) => console.log("get reviews error: ", err));
 }
 
+const getCharacteristics = (product_id) => {
+  let queryStringToGetReviews = `SELECT * FROM reviews WHERE product_id = ${product_id}`;
+
+  return pool
+    .query(queryStringToGetReviews)
+    .then((response) => {
+      let characteristicsPromises = [];
+      let characteristicsToProcess = [];
+      let responseForClient = {
+        product_id: product_id.toString(),
+        ratings: {},
+        recommended: {},
+        characteristics: {}
+      }
+
+      for (var i = 0; i < response.rows.length; i++) {
+        let currentReview = response.rows[i];
+
+        // write to ratings object
+        if (!responseForClient.ratings[currentReview.rating]) {
+          responseForClient.ratings[currentReview.rating] = 1;
+        } else {
+          responseForClient.ratings[currentReview.rating]++
+        }
+
+        // write to recommended object
+        if (currentReview.recommend === false && !responseForClient.recommended[0]) {
+          responseForClient.recommended[0] = 1;
+        } else if (currentReview.recommend === false) {
+          responseForClient.recommended[0]++;
+        } else if (currentReview.recommend === true && !responseForClient.recommended[1]) {
+          responseForClient.recommended[1] = 1;
+        } else if (currentReview.recommend === true) {
+          responseForClient.recommended[1]++;
+        }
+
+        let queryStringToGetCharacteristics = `SELECT * FROM characteristics_reviews WHERE review_id = ${currentReview.id}`;
+        characteristicsPromises.push(
+          pool
+            .query(queryStringToGetCharacteristics)
+            .then((response) => {
+              return response;
+            })
+            .catch((err) => { return err })
+        );
+      }
+      return Promise.all(characteristicsPromises)
+        .then((results) => {
+          for (var i = 0; i < results.length; i++) {
+            characteristicsToProcess.push(results[i].rows);
+          }
+          for (var j = 0; j < characteristicsToProcess.length; j++) {
+            // console.log("characteristicToProcess: ", characteristicsToProcess[j]);
+            for (var k = 0; k < characteristicsToProcess[j].length; k++) {
+              let individualCharacteristic = characteristicsToProcess[j][k];
+              if (!responseForClient.characteristics[individualCharacteristic.characteristics_name]) {
+                responseForClient.characteristics[individualCharacteristic.characteristics_name] = individualCharacteristic.value;
+              } else {
+                responseForClient.characteristics[individualCharacteristic.characteristics_name] += individualCharacteristic.value;
+              }
+            }
+          };
+          for (let key in responseForClient.characteristics) {
+            responseForClient.characteristics[key] = { value: (responseForClient.characteristics[key] / response.rows.length).toString().slice(0,5) };
+          }
+          return responseForClient;
+        })
+        .catch((err) => { return err });
+    })
+    .catch((err) => { return err });
+}
+// ratings
+// create ratings object
+// create recommended object
+// create characteristics object
+// loop over reviews
+// create average characteristic ratings for each characteristic
+// increment keys in ratings object for each review
+// increment keys in recommended object
+// add to average characteristic rating
+
+// "product_id": "24",
+//   "ratings": {
+//     "1": 2,
+//     "2": 2,
+//     "4": 4,
+//     "5": 14
+//   },
+//   "recommended": {
+//     "0": 3,
+//     "1": 19
+//   },
+//   "characteristics": {
+//     "Fit": {
+//       "id": 78,
+//       "value": "3.7368"
+//     },
+//     "Length": {
+//       "id": 79,
+//       "value": "3.7895"
+//     },
+//     "Comfort": {
+//       "id": 80,
+//       "value": "4.0000"
+//     },
+//     "Quality": {
+//       "id": 81,
+//       "value": "3.8421"
+//     }
+//   }
+
 const addReview = (reviewObject) => {
   let date = reviewObject.date.toString().slice(0, 24);
   let queryString = `SELECT setval('reviews_id_seq', (SELECT MAX(id) FROM reviews)); INSERT INTO reviews(id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES(DEFAULT, ${reviewObject.product_id}, '${reviewObject.rating}', '${date}', '${reviewObject.summary}', '${reviewObject.body}', '${reviewObject.recommend}', '${reviewObject.reported}', '${reviewObject.reviewer_name}', '${reviewObject.reviewer_email}', '${reviewObject.response}', '${reviewObject.helpfulness}') RETURNING id;`
@@ -79,6 +190,7 @@ const addCharacteristics = (characteristicsObject, review_id) => {
   }
 }
 
+
 const addPhotos = (photos, review_id) => {
   // do something, like add photos to photos table in the correct way :)
 }
@@ -86,6 +198,7 @@ const addPhotos = (photos, review_id) => {
 module.exports = {
   getReviews,
   getPhotos,
+  getCharacteristics,
   addReview,
   addCharacteristics,
   addPhotos
