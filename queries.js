@@ -1,4 +1,5 @@
-const { Pool } = require('pg')
+const { Pool } = require('pg');
+const { response } = require('express');
 const connectionString = 'postgresql://localhost:5432/reviewsdb?user=ethan&password=ethan';
 
 const pool = new Pool({
@@ -84,7 +85,6 @@ const getCharacteristics = (product_id) => {
             characteristicsToProcess.push(results[i].rows);
           }
           for (var j = 0; j < characteristicsToProcess.length; j++) {
-            // console.log("characteristicToProcess: ", characteristicsToProcess[j]);
             for (var k = 0; k < characteristicsToProcess[j].length; k++) {
               let individualCharacteristic = characteristicsToProcess[j][k];
               if (!responseForClient.characteristics[individualCharacteristic.characteristics_name]) {
@@ -95,7 +95,7 @@ const getCharacteristics = (product_id) => {
             }
           };
           for (let key in responseForClient.characteristics) {
-            responseForClient.characteristics[key] = { value: (responseForClient.characteristics[key] / response.rows.length).toString().slice(0,5) };
+            responseForClient.characteristics[key] = { value: (responseForClient.characteristics[key] / response.rows.length).toString().slice(0, 5) };
           }
           return responseForClient;
         })
@@ -103,45 +103,6 @@ const getCharacteristics = (product_id) => {
     })
     .catch((err) => { return err });
 }
-// ratings
-// create ratings object
-// create recommended object
-// create characteristics object
-// loop over reviews
-// create average characteristic ratings for each characteristic
-// increment keys in ratings object for each review
-// increment keys in recommended object
-// add to average characteristic rating
-
-// "product_id": "24",
-//   "ratings": {
-//     "1": 2,
-//     "2": 2,
-//     "4": 4,
-//     "5": 14
-//   },
-//   "recommended": {
-//     "0": 3,
-//     "1": 19
-//   },
-//   "characteristics": {
-//     "Fit": {
-//       "id": 78,
-//       "value": "3.7368"
-//     },
-//     "Length": {
-//       "id": 79,
-//       "value": "3.7895"
-//     },
-//     "Comfort": {
-//       "id": 80,
-//       "value": "4.0000"
-//     },
-//     "Quality": {
-//       "id": 81,
-//       "value": "3.8421"
-//     }
-//   }
 
 const addReview = (reviewObject) => {
   let date = reviewObject.date.toString().slice(0, 24);
@@ -159,7 +120,7 @@ const addCharacteristics = (characteristicsObject, review_id) => {
     characteristics.push([review_id, key, characteristicsObject.characteristics[key]]);
   }
 
-  // doing these in order (not in a loop) because the async aspect of queries causes problems inside a loop (unique id collisions) - it seems necessary to perform next insertion only after previous has completed
+  // doing these in order (not in a loop) because the async aspect of queries causes problems inside a loop (unique id collisions), hence perform next insertion only after previous has completed
   pool
     .query(`SELECT setval('characteristics_reviews_id_seq', (SELECT MAX(id) FROM characteristics_reviews)); INSERT INTO characteristics_reviews(id, review_id, characteristics_name, value) VALUES(DEFAULT, '${characteristics[0][0]}', '${characteristics[0][1]}', '${characteristics[0][2]}')`)
     .then((res) => {
@@ -190,9 +151,29 @@ const addCharacteristics = (characteristicsObject, review_id) => {
   }
 }
 
-
+// legacy front end does not have addPhoto capability, so I am leaving this undone for now
 const addPhotos = (photos, review_id) => {
   // do something, like add photos to photos table in the correct way :)
+}
+
+const markHelpful = ({ review_id }) => {
+  review_id = parseInt(review_id);
+  queryString = `UPDATE reviews SET helpfulness = helpfulness + 1 WHERE id = ${review_id}`
+
+  return pool
+    .query(queryString)
+    .then((response) => response)
+    .catch((err) => err);
+}
+
+const report = ({ review_id }) => {
+  review_id = parseInt(review_id);
+  queryString = `UPDATE reviews SET reported = true WHERE id = ${review_id}`
+
+  return pool
+    .query(queryString)
+    .then((response) => response)
+    .catch((err) => err);
 }
 
 module.exports = {
@@ -201,5 +182,7 @@ module.exports = {
   getCharacteristics,
   addReview,
   addCharacteristics,
-  addPhotos
+  addPhotos,
+  markHelpful,
+  report
 }

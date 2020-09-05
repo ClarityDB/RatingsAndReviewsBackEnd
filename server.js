@@ -5,7 +5,7 @@ const path = require("path");
 const PORT = process.env.PORT || 3555;
 const bodyParser = require("body-parser");
 
-const { getReviews, addReview, addCharacteristics, addPhotos, getPhotos, getCharacteristics } = require('./queries');
+const { getReviews, addReview, addCharacteristics, addPhotos, getPhotos, getCharacteristics, markHelpful, report } = require('./queries');
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -14,7 +14,6 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "./client/dist")));
 app.use('/:productId', express.static(path.join(__dirname, "./client/dist")));
 
-// GET /reviews/:product_id/list
 // Returns a list of reviews for a particular product. This list does not include any reported reviews.
 app.get('/reviews/:product_id/list', (req, res) => {
   getReviews(req.params.product_id.toString(), req.query.count, req.query.sort)
@@ -37,52 +36,36 @@ app.get('/reviews/:product_id/list', (req, res) => {
               }
             }
           }
-          res.send(data.results);
+
+          // remove any reviews that have been reported
+          const withoutReported = []
+          for (var i = 0; i < data.results.length; i++) {
+            let currentReview = data.results[i];
+            if (!currentReview.reported === true) {
+              withoutReported.push(currentReview)
+            }
+          }
+
+          // sort remaining reviews by newest as default response
+          withoutReported.sort((a, b) => { return b.date - a.date });
+          // sort by helpfulness otherwise
+          if (req.query.sort === 'helpful' || req.query.sort === 'relevant') {
+            withoutReported.sort((a, b) => { return b.helpfulness - a.helpfulness })
+          }
+          res.send(withoutReported);
         })
         .catch((err) => console.log("promise all error: ", err));
     })
     .catch((err) => res.send(err))
 });
 
-// GET /reviews/:product_id/meta
 // Returns review metadata for a given product
 app.get("/reviews/:product_id/meta", (req, res) => {
-  // console.log("req.params in meta route", req.params);
-  // console.log("req.query in meta route: ", req.query);
   getCharacteristics(req.params.product_id.toString())
     .then((response) => res.send(response))
     .catch((err) => console.log("error getting characteristics: ", err));
-
-  // res.send({
-  //   "product_id": "24",
-  //   "ratings": {
-  //     "1": 2,
-  //     "2": 2,
-  //     "4": 4,
-  //     "5": 14
-  //   },
-  //   "recommended": {
-  //     "0": 3,
-  //     "1": 19
-  //   },
-  //   "characteristics": {
-  //     "Fit": {
-  //       "id": 78,
-  //       "value": "3.7368"
-  //     },
-  //     "Length": {
-  //       "id": 79,
-  //       "value": "3.7895"
-  //     },
-  //     "Comfort": {
-  //       "id": 80,
-  //       "value": "4.0000"
-  //     }
-  //   }
-  // })
 })
 
-// POST /reviews/:product_id
 // Adds a review for the given product
 app.post("/reviews/:product_id", (req, res) => {
   const reviewToAdd = {
@@ -118,18 +101,23 @@ app.post("/reviews/:product_id", (req, res) => {
     .catch((err) => res.send(err));
 })
 
-// PUT /reviews/helpful/:review_id
 // Updates a review to show it was found helpful
 app.put("/reviews/helpful/:review_id", (req, res) => {
-  console.log("helpful review: ", req.params);
-  res.sendStatus(204);
+  markHelpful(req.params)
+    .then((response) => {
+      res.send(response);
+    })
+    .catch((err) => err)
 })
 
-// PUT /reviews/report/:review_id
 // Updates a review to show it was reported. Note, this action does not delete the review, but the review will not be returned in the above GET request.
 app.put("/reviews/report/:review_id", (req, res) => {
   console.log("reported review:", req.params);
-  res.sendStatus(204);
+  report(req.params)
+    .then((response) => {
+      res.send(response)
+    })
+    .catch((err) => err);
 })
 
 app.listen(PORT, () => {

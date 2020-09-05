@@ -4,7 +4,6 @@ const ProductBreakdown = (props) => (
   <div className="col no-gutters">
     {props.data
       ? props.data.map((type) => {
-        console.log("type: ", type)
         const category = type[0];
         const oldNumber = type[1].value;
         const number = (oldNumber / 5) * 100;
