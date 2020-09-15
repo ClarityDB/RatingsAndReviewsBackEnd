@@ -6,7 +6,7 @@
     }
   },
   "version": "1.0.0",
-  "description": "",
+  "description": "A revamped back-end for a legacy e-commerce website, optimized to handle webscale traffic",
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage --verbose",
